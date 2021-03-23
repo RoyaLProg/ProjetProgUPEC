@@ -1,11 +1,23 @@
 class Case{
-    char x;
+    int x;
     int y;
     int color;
 }
-class board{
+class Board{
     Case[] cases = new Case [121];
 }
 void main() {
-    
+    Board board = new Board();
+    int count = 0;
+    int x = 0;
+    int y = 0;
+    while (count < 121){
+        board.cases[count].x = x;
+        board.cases[count].y = y;
+        if(y == 11){
+            y = 0;
+            x++;
+        }
+        count++;
+    }
 }
