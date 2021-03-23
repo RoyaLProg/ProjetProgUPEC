@@ -1,3 +1,11 @@
+class Case{
+    char x;
+    int y;
+    int color;
+}
+class board{
+    Case[] cases = new Case [121];
+}
 void main() {
     
 }
