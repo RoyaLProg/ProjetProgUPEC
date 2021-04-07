@@ -1,23 +1,55 @@
-class Case{
-    int x;
-    int y;
-    int color;
-}
-class Board{
-    Case[] cases = new Case [121];
-}
-void main() {
-    Board board = new Board();
-    int count = 0;
+class Box{
     int x = 0;
     int y = 0;
-    while (count < 121){
-        board.cases[count].x = x;
-        board.cases[count].y = y;
-        if(y == 11){
-            y = 0;
+    int color = 0;
+}
+class Board{
+    private Box[] boxes = new Box[121];
+    public void Init(){
+        int count = 0;
+        int x = 1;
+        int y = 1;
+        while (count < 121){
+            if(this.boxes[count] == null) this.boxes[count] = new Box();
+            this.boxes[count].x = x;
+            this.boxes[count].y = y;
+            if(x == 11){
+                x = 0;
+                if (y != 11) y++;
+            }
+            count++;
             x++;
         }
-        count++;
     }
+    public int[] getCoords(int box){
+        int[] tab = new int[2];
+        tab[0] = this.boxes[box].x;
+        tab[1] = this.boxes[box].y;
+        return tab;
+    }
+    public void getColorMap(){
+        int count = 0;
+        while (count < 121){
+            print(this.boxes[count].color + " ");
+            if(this.boxes[count].x == 11){
+                println();
+            }
+            count++;
+        }
+    }
+    public int getColor(int box){
+        return this.boxes[box].color;
+    }
+    public int getBoxNumberByCoords(int x, int y){
+        return (y*11)+x;
+    }
+}
+void Affichage(){
+    reset(300, 300);
+}
+void main(){
+    Board board = new Board();
+    board.Init();
+    board.getColorMap();
+    
 }
