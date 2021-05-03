@@ -2,15 +2,40 @@ class Box{
     int x = 0;
     int y = 0;
     int color = 0;
+    int fetch = 0;
 }
-class Board{
+class Game{
+    private Board board = new Board();
+    private AI Computer = new AI();
+    public Game(){
+
+    }
+}
+public class Board{
     private Box[] boxes = new Box[121];
-    public void Init(){
+    public Board(){
         int count = 0;
         int x = 1;
         int y = 1;
         while (count < 121){
             if(this.boxes[count] == null) this.boxes[count] = new Box();
+            this.boxes[count].color = 0;
+            this.boxes[count].x = x;
+            this.boxes[count].y = y;
+            if(x == 11){
+                x = 0;
+                if (y != 11) y++;
+            }
+            count++;
+            x++;
+        }
+    }
+    public void reset(){
+        int count = 0;
+        int x = 1;
+        int y = 1;
+        while (count < 121){
+            this.boxes[count].color = 0;
             this.boxes[count].x = x;
             this.boxes[count].y = y;
             if(x == 11){
@@ -41,15 +66,29 @@ class Board{
         return this.boxes[box].color;
     }
     public int getBoxNumberByCoords(int x, int y){
-        return (y*11)+x;
+        return ((y-1)*11)+x-1;
     }
+}
+private class AI{
+    Board board = new Board();
+    int color = 0;
+    
+}
+private class player{
+    int color = 0;
 }
 void Affichage(){
     reset(300, 300);
 }
+void hexagone(){
+    for(int i = 0; i < 30; i++){
+        for(int j = 0; j < 30; i++){
+            if(i == i) setPixel(i,j,"grey");
+        }
+    }
+}
 void main(){
-    Board board = new Board();
-    board.Init();
-    board.getColorMap();
-    
+    Game game = new Game();
+    Board board = game.board;
+    print(board.getBoxNumberByCoords(10, 10));
 }
