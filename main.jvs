@@ -6,9 +6,13 @@ class Box{
 }
 class Game{
     private Board board;
+    private int[] coup;
+    private boolean playerselection = false;
     private char[] playerchar = {'o','+','~','o'};
+    private boolean finished = false;
     public boolean debug = false; 
     private AI Computer = new AI();
+    private int player = 1;
     public Game(){
         board = new Board();
     }
@@ -25,6 +29,32 @@ class Game{
             println();
         }
         println("             A B C D E F G H I J K");
+    }
+    public void setDebug(boolean x){
+        debug = x;
+    }
+    public void selectSymbole(){
+        char c;
+        for(int i = 1; i<=2; i++){
+            c = readChar("symbole joueur " + i + " laissez vide pour garder celui par defaut ("+playerchar[i]+")");
+            if (c != Character.MIN_VALUE) playerchar[i] = c;
+        }
+    }
+    public void jouerCoup(int player){
+        int x = 0;
+        String[] l = {"A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K"};
+        String[] l2 = {"a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k"};
+        int y = readInt("Ligne ?");
+        String pre_x = readString("Colone ?");
+        int bet_x = Integer.parseInt(pre_x);
+        if(bet_x != 0) x = bet_x-1;
+        else{
+            for(int i = 0; i < l.length; i++){
+                 if(equal(pre_x,l[i])){x = i; break;}
+                 if(equal(pre_x,l2[i])){x = i; break;}
+            }
+        }
+        board.boxes[y-1][x].color = player;
     }
 }
 public class Board{
@@ -72,21 +102,36 @@ private class AI{
     int color = 0;
     
 }
-private class player{
-    int color = 0;
-}
-void Affichage(){
-    reset(300, 300);
-}
-void hexagone(){
-    for(int i = 0; i < 30; i++){
-        for(int j = 0; j < 30; i++){
-            if(i == i) setPixel(i,j,"grey");
-        }
-    }
+private class Player{
+    int color;
 }
 void main(){
     Game game = new Game();
     Board board = game.board;
-    game.Affichage();
+    while(!game.finished){
+        while(!game.playerselection){
+            String x = readString("Combien de joueurs ?");
+            switch(x){
+                case "debug":
+                    if(!game.debug){game.setDebug(true);println("debug : on");}
+                    else {game.setDebug(false);println("debug : off");}
+                    break;
+                case "1" :
+                    println("Pour le moment le jeux n'est jouable que a deux ...");
+                    break;
+                case "2" :
+                    game.selectSymbole();
+                    game.playerselection = true;
+                    break;
+                default:
+                    println("error : inconnu");
+                    break;
+            }
+        }
+        clear();
+        game.Affichage();
+        game.jouerCoup(1);
+        sleep(2000);
+        clear();
+    }
 }
