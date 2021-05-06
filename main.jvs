@@ -6,9 +6,25 @@ class Box{
 }
 class Game{
     private Board board;
+    private char[] playerchar = {'o','+','~','o'};
+    public boolean debug = false; 
     private AI Computer = new AI();
     public Game(){
         board = new Board();
+    }
+    public void Affichage(){
+        println("  A B C D E F G H I J K");
+        for(int i =0;i<board.boxes.length;i++){
+            for(int space = 0; space < i; space++) print(" ");
+            print(i + 1 + " ");
+            for(int j=0;j<board.boxes[0].length;j++){
+                print(playerchar[board.boxes[i][j].color]);
+                if(j<10) print(" ");
+            }
+            print(" "+(i+1));
+            println();
+        }
+        println("             A B C D E F G H I J K");
     }
 }
 public class Board{
@@ -72,5 +88,5 @@ void hexagone(){
 void main(){
     Game game = new Game();
     Board board = game.board;
-    board.getColorMap();
+    game.Affichage();
 }
