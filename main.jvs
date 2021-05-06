@@ -1,3 +1,134 @@
-void main() {
+class Box{
+    int x = 0;
+    int y = 0;
+    int color = 0;
+    int fetch = 0;
+}
+class Game{
+    private Board board;
+    private int[] coup;
+    private boolean playerselection = false;
+    private char[] playerchar = {'o','+','~','o'};
+    private boolean finished = false;
+    public boolean debug = false; 
+    private AI Computer = new AI();
+    private int player = 1;
+    public Game(){
+        board = new Board();
+    }
+    public void Affichage(){
+        println("  A B C D E F G H I J K");
+        for(int i =0;i<board.boxes.length;i++){
+            for(int space = 0; space < i; space++) print(" ");
+            print(i + 1 + " ");
+            for(int j=0;j<board.boxes[0].length;j++){
+                print(playerchar[board.boxes[i][j].color]);
+                if(j<10) print(" ");
+            }
+            print(" "+(i+1));
+            println();
+        }
+        println("             A B C D E F G H I J K");
+    }
+    public void setDebug(boolean x){
+        debug = x;
+    }
+    public void selectSymbole(){
+        char c;
+        for(int i = 1; i<=2; i++){
+            c = readChar("symbole joueur " + i + " laissez vide pour garder celui par defaut ("+playerchar[i]+")");
+            if (c != Character.MIN_VALUE) playerchar[i] = c;
+        }
+    }
+    public void jouerCoup(int player){
+        int x = 0;
+        String[] l = {"A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K"};
+        String[] l2 = {"a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k"};
+        int y = readInt("Ligne ?");
+        String pre_x = readString("Colone ?");
+        int bet_x = Integer.parseInt(pre_x);
+        if(bet_x != 0) x = bet_x-1;
+        else{
+            for(int i = 0; i < l.length; i++){
+                 if(equal(pre_x,l[i])){x = i; break;}
+                 if(equal(pre_x,l2[i])){x = i; break;}
+            }
+        }
+        board.boxes[y-1][x].color = player;
+    }
+}
+public class Board{
+    private Box[][] boxes = new Box[11][11];
+    public Board(){
+        for(int i = 0; i < boxes.length; i++){
+            for(int j = 0; j < boxes[0].length; j++){
+                boxes[i][j] = new Box();
+                boxes[i][j].x = j+1;
+                boxes[i][j].y = i+1;
+                boxes[i][j].color = 0;
+            }
+        }
+    }
+    public void reset(){
+        int count = 0;
+        int x = 1;
+        int y = 1;
+        while (count < 121){
+            for(int i = 0; i < boxes.length; i++){
+            for(int j = 0; j < boxes[0].length; j++){
+                boxes[i][j].x = j;
+                boxes[i][j].y = i;
+                boxes[i][j].color = 0;
+            }
+        }
+        }
+    }
+    public void getColorMap(){
+        for(int i = 0;i<boxes.length;i++){
+            for(int j = 0; j<boxes[0].length;j++){
+                print(boxes[i][j].color + " ");
+            }
+            println();
+        }
+        println("0 = vide; 1 = joueur 1; 2 = joueur 2; 3 = AI PARSE");
+        int count = 0;
+    }
+    public int getColor(int x,int y){
+        return this.boxes[x-1][y-1].color;
+    }
+}
+private class AI{
+    Board board = new Board();
+    int color = 0;
     
+}
+void main(){
+    Game game = new Game();
+    Board board = game.board;
+    while(!game.finished){
+        while(!game.playerselection){
+            String x = readString("Combien de joueurs ?");
+            switch(x){
+                case "debug":
+                    if(!game.debug){game.setDebug(true);println("debug : on");}
+                    else {game.setDebug(false);println("debug : off");}
+                    break;
+                case "1" :
+                    println("Pour le moment le jeux n'est jouable que a deux ...");
+                    break;
+                case "2" :
+                    game.selectSymbole();
+                    game.playerselection = true;
+                    break;
+                default:
+                    println("error : inconnu");
+                    break;
+            }
+        }
+        clear();
+        game.Affichage();
+        game.jouerCoup(game.player);
+        sleep(2000);
+        clear();
+    }
 }
