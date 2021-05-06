@@ -5,10 +5,10 @@ class Box{
     int fetch = 0;
 }
 class Game{
-    private Board board = new Board();
+    private Board board;
     private AI Computer = new AI();
     public Game(){
-
+        board = new Board();
     }
 }
 public class Board{
@@ -16,8 +16,9 @@ public class Board{
     public Board(){
         for(int i = 0; i < boxes.length; i++){
             for(int j = 0; j < boxes[0].length; j++){
-                boxes[i][j].x = j;
-                boxes[i][j].y = i;
+                boxes[i][j] = new Box();
+                boxes[i][j].x = j+1;
+                boxes[i][j].y = i+1;
                 boxes[i][j].color = 0;
             }
         }
