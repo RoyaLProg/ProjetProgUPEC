@@ -12,22 +12,14 @@ class Game{
     }
 }
 public class Board{
-    private Box[] boxes = new Box[121];
+    private Box[][] boxes = new Box[11][11];
     public Board(){
-        int count = 0;
-        int x = 1;
-        int y = 1;
-        while (count < 121){
-            if(this.boxes[count] == null) this.boxes[count] = new Box();
-            this.boxes[count].color = 0;
-            this.boxes[count].x = x;
-            this.boxes[count].y = y;
-            if(x == 11){
-                x = 0;
-                if (y != 11) y++;
+        for(int i = 0; i < boxes.length; i++){
+            for(int j = 0; j < boxes[0].length; j++){
+                boxes[i][j].x = j;
+                boxes[i][j].y = i;
+                boxes[i][j].color = 0;
             }
-            count++;
-            x++;
         }
     }
     public void reset(){
@@ -35,38 +27,27 @@ public class Board{
         int x = 1;
         int y = 1;
         while (count < 121){
-            this.boxes[count].color = 0;
-            this.boxes[count].x = x;
-            this.boxes[count].y = y;
-            if(x == 11){
-                x = 0;
-                if (y != 11) y++;
+            for(int i = 0; i < boxes.length; i++){
+            for(int j = 0; j < boxes[0].length; j++){
+                boxes[i][j].x = j;
+                boxes[i][j].y = i;
+                boxes[i][j].color = 0;
             }
-            count++;
-            x++;
         }
-    }
-    public int[] getCoords(int box){
-        int[] tab = new int[2];
-        tab[0] = this.boxes[box].x;
-        tab[1] = this.boxes[box].y;
-        return tab;
+        }
     }
     public void getColorMap(){
-        int count = 0;
-        while (count < 121){
-            print(this.boxes[count].color + " ");
-            if(this.boxes[count].x == 11){
-                println();
+        for(int i = 0;i<boxes.length;i++){
+            for(int j = 0; j<boxes[0].length;j++){
+                print(boxes[i][j].color + " ");
             }
-            count++;
+            println();
         }
+        println("0 = vide; 1 = joueur 1; 2 = joueur 2; 3 = AI PARSE");
+        int count = 0;
     }
-    public int getColor(int box){
-        return this.boxes[box].color;
-    }
-    public int getBoxNumberByCoords(int x, int y){
-        return ((y-1)*11)+x-1;
+    public int getColor(int x,int y){
+        return this.boxes[x-1][y-1].color;
     }
 }
 private class AI{
@@ -90,5 +71,5 @@ void hexagone(){
 void main(){
     Game game = new Game();
     Board board = game.board;
-    print(board.getBoxNumberByCoords(10, 10));
+    board.getColorMap();
 }
