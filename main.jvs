@@ -102,9 +102,6 @@ private class AI{
     int color = 0;
     
 }
-private class Player{
-    int color;
-}
 void main(){
     Game game = new Game();
     Board board = game.board;
@@ -130,7 +127,7 @@ void main(){
         }
         clear();
         game.Affichage();
-        game.jouerCoup(1);
+        game.jouerCoup(game.player);
         sleep(2000);
         clear();
     }
