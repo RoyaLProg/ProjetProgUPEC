@@ -10,7 +10,7 @@ class Game{
     private boolean playerselection = false;
     private char[] playerchar = {'o','+','~','o'};
     private boolean finished = false;
-    public boolean debug = false; 
+    public boolean debug = true; 
     private AI Computer = new AI();
     private int player = 1;
     public Game(){
@@ -29,6 +29,8 @@ class Game{
             println();
         }
         println("             A B C D E F G H I J K");
+        println();
+        println();
     }
     public void setDebug(boolean x){
         debug = x;
@@ -44,8 +46,18 @@ class Game{
         int x = 0;
         String[] l = {"A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K"};
         String[] l2 = {"a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k"};
-        int y = readInt("Ligne ?");
-        String pre_x = readString("Colone ?");
+        try{
+        String pre_y = readString("Joueur "+ player + " Ligne ?");
+        if(equal(pre_y,"exit")){
+            finished = true;
+            return;
+        }
+        int y = Integer.parseInt(pre_y);
+        String pre_x = readString("Joueur "+ player + " Colone ?");
+        if(equal(pre_x,"exit")){
+            finished = true;
+            return;
+        }
         int bet_x = Integer.parseInt(pre_x);
         if(bet_x != 0) x = bet_x-1;
         else{
@@ -55,6 +67,17 @@ class Game{
             }
         }
         board.boxes[y-1][x].color = player;
+        changePlayer();
+        }catch(Exception e){
+            clear();
+            println("error : entrees vides detectees !");
+            println("veuillez ne pas laisser les entrees vides");
+            print("tapez \"exit\" pour fermer la partie !");
+            sleep(5000);
+        }
+    }
+    public void changePlayer(){
+        player = 3-player;
     }
 }
 public class Board{
@@ -127,8 +150,9 @@ void main(){
         }
         clear();
         game.Affichage();
+        if(game.debug) board.getColorMap();
         game.jouerCoup(game.player);
-        sleep(2000);
         clear();
     }
+    print("Le programme s'est terminee avec succes !");
 }
