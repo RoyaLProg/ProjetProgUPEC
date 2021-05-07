@@ -42,6 +42,10 @@ class Game{
             if (c != Character.MIN_VALUE) playerchar[i] = c;
         }
     }
+    public void toggleDebug(){
+        if(!debug){setDebug(true);println("debug : on");}
+        else {setDebug(false);println("debug : off");}
+    }
     public void jouerCoup(int player){
         int x = 0;
         String[] l = {"A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K"};
@@ -133,8 +137,7 @@ void main(){
             String x = readString("Combien de joueurs ?");
             switch(x){
                 case "debug":
-                    if(!game.debug){game.setDebug(true);println("debug : on");}
-                    else {game.setDebug(false);println("debug : off");}
+                    game.toggleDebug();
                     break;
                 case "1" :
                     println("Pour le moment le jeux n'est jouable que a deux ...");
