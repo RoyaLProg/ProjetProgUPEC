@@ -10,7 +10,8 @@ class Game{
     private boolean playerselection = false;
     private char[] playerchar = {'o','+','~','o'};
     private boolean finished = false;
-    public boolean debug = true; 
+    public boolean debug = false;
+    private boolean versusAI = false;
     private AI Computer = new AI();
     private int player = 1;
     public Game(){
