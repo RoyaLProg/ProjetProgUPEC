@@ -126,10 +126,35 @@ private class AI{
     int color = 0;
     
 }
+private class Analyse{
+    private String file = "";
+    private Boolean finished = false;
+    public void Checkformat(){
+
+    }
+    public void openFile(){
+
+    }
+}
 void main(){
     Game game = new Game();
     Board board = game.board;
-    while(!game.finished){
+    Analyse analyse = new Analyse();
+    while(!game.finished && !analyse.finished){
+    String y = readString("jouer : \"jouer\" \n Ouvrir une partie : \"ouvrir\" ");
+    switch(y){
+                case "Jouer" :
+                    println("Début de la partie");
+                    sleep(1000);
+                    break;
+                case "ouvrir" :
+                    println("Ouverture fichier");
+                    game.playerselection = true;
+                    break;
+                default:
+                    println("error : inconnu");
+                    break;
+        }
         while(!game.playerselection){
             String x = readString("Combien de joueurs ?");
             switch(x){
