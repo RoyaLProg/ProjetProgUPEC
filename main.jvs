@@ -86,9 +86,17 @@ class Game{
     }
     public void Enregistrement(String format){
         String x = readString("nom du fichier ? \nVous pouvez specifier un chemin d'access : (i.e /path/to/file) \npar defaut il sera enregistrer dans le repertoire du jeux ");
-       switch(format){
+        String ext = "";
+        java.io.OutputStreamWriter file;
+        String name;
+            if(!equal(stringNth(x,0),"/") && !equal(stringNth(x,0),"C")){
+                name = "./"+x;
+            } else {
+                name = x;
+            }
+        switch(format){
             case "FEN" :
-                String ext = ".txt";
+                ext = ".txt";
                 String FEN = "";
                 int count = 0;
                 for(int i = 0; i < board.boxes.length; i++){
@@ -109,22 +117,43 @@ class Game{
                     FEN +="/";
                 }
                 FEN += " "+player;
-                String name;
-                    if(!equal(stringNth(x,0),"/") && !equal(stringNth(x,0),"C")){
-                        name = "./"+x;
-                    } else {
-                        name = x;
-                    }
-                    println("Enregistre à : "+name+ext);
-                    java.io.OutputStreamWriter file=openOut(name+ext);
-                    printToFile(file, FEN);
-                    closeOut(file);
-
+                println("Enregistre à : "+name+ext);
+                file=openOut(name+ext);
+                printToFile(file, FEN);
+                closeOut(file);
                 println(FEN);
                 break;
-            case "PGN" :
+            case "tableau":
+                ext = ".csv";
+                String tableau = "";
+                for(int i = 0; i < board.boxes.length; i++){
+                    for(int j = 0; j < board.boxes[0].length; j++){
+                        tableau += board.boxes[i][j].color;
+                        if(j < 10) tableau += ",";
+                    }
+                    tableau += "\n";
+                }
+                println("Enregistre à : "+name+ext);
+                file = openOut(name+ext);
+                printToFile(file, tableau);
+                closeOut(file);
+                println(tableau);
                 break;
             case "liste" :
+                ext = ".csv";
+                String liste = "";
+                for(int i = 0; i < board.boxes.length; i++){
+                    for(int j = 0; j < board.boxes[0].length; j++){
+                        liste += i + "," + j + "," + board.boxes[i][j].color;
+                        if(j < 10) liste += "\n";
+                    }
+                    liste += "\n";
+                }
+                println("Enregistre à : "+name+ext);
+                file = openOut(name+ext);
+                printToFile(file, liste);
+                closeOut(file);
+                println(liste);
                 break;
             default :
                 println("Une erreur inconnu dans game.Enregistrement()");
@@ -229,19 +258,21 @@ void main(){
         if (enregistrer == true ){
             String format = "";
             while(enregistrer){
-                x = readString("Sous quel format ? (FEN, PGN, liste)");
+                x = readString("Sous quel format ? (FEN (TXT), tableau (CSV), liste (CSV) )");
                 switch(x){
                     case "FEN" :
+                        game.Enregistrement(x);
                         break;
-                    case "PGN" :
+                    case "tableau" :
+                        game.Enregistrement(x);
                         break;
                     case "liste" :
+                        game.Enregistrement(x);
                         break;
                     default :
                         println("error : inconnu");
                         break;
                 }
-                game.Enregistrement(x);
                 x = readString("Voulez-vous l'enregistrer dans un autre format ? [o/N]");
                 switch(x){
                     case "O" :
