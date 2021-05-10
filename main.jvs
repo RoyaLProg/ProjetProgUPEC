@@ -10,6 +10,7 @@ class Game{
     private boolean playerselection = false;
     private char[] playerchar = {'o','+','~','o'};
     private boolean finished = false;
+    private boolean InGame = false;
     public boolean debug = false;
     private boolean versusAI = false;
     private AI Computer = new AI();
@@ -52,23 +53,26 @@ class Game{
         String[] l = {"A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K"};
         String[] l2 = {"a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k"};
         try{
-        String pre_y = readString("Joueur "+ player + " Ligne ?");
-        if(equal(pre_y,"exit")){finished = true; return;}
-        int y = Integer.parseInt(pre_y);
-        String pre_x = readString("Joueur "+ player + " Colone ?");
-        if(equal(pre_x,"exit")){finished = true; return;}
-        int bet_x = Integer.parseInt(pre_x);
-        if(bet_x != 0){x = bet_x-1;}
-        else{
-            for(int i = 0; i < l.length; i++){
-                 if(equal(pre_x,l[i])){x = i; break;}
-                 if(equal(pre_x,l2[i])){x = i; break;}
+            String pre_y = readString("Joueur "+ player + " Ligne ?");
+            if(equal(pre_y,"exit")){finished = true; return;}
+            int y = Integer.parseInt(pre_y);
+            String pre_x = readString("Joueur "+ player + " Colone ?");
+            if(equal(pre_x,"exit")){finished = true; return;}
+            int bet_x= -1;
+            try{
+                bet_x = Integer.parseInt(pre_x);
+            }catch(Exception e){}
+            if(bet_x != -1){x = bet_x-1;}
+            else{
+                for(int i = 0; i < l.length; i++){
+                    if(equal(pre_x,l[i])){x = i; break;}
+                    if(equal(pre_x,l2[i])){x = i; break;}
+                }
             }
-        }
-        board.boxes[y-1][x].color = player;
-        coup[0] = y-1;
-        coup[1] = x;
-        changePlayer();
+            board.boxes[y-1][x].color = player;
+            coup[0] = y-1;
+            coup[1] = x;
+            changePlayer();
         }catch(Exception e){
             clear();
             println("error : entrees vides detectees !");
@@ -79,6 +83,53 @@ class Game{
     }
     public void changePlayer(){
         player = 3-player;
+    }
+    public void Enregistrement(String format){
+        String x = readString("nom du fichier ? \nVous pouvez specifier un chemin d'access : (i.e /path/to/file) \npar defaut il sera enregistrer dans le repertoire du jeux ");
+       switch(format){
+            case "FEN" :
+                String ext = ".txt";
+                String FEN = "";
+                int count = 0;
+                for(int i = 0; i < board.boxes.length; i++){
+                    for (int j = 0; j < board.boxes[0].length; j++){
+                        if(board.boxes[i][j].color == 0 || board.boxes[i][j].color == 3){
+                            count++;
+                        } else if(board.boxes[i][j].color == 1){
+                            if(count != 0) FEN+=count;
+                            FEN +="x";
+                            count = 0;
+                        } else {
+                            if(count != 0) FEN+=count;
+                            FEN +="X";
+                            count = 0;
+                        }
+                    }
+                    count = 0;
+                    FEN +="/";
+                }
+                FEN += " "+player;
+                String name;
+                    if(!equal(stringNth(x,0),"/") && !equal(stringNth(x,0),"C")){
+                        name = "./"+x;
+                    } else {
+                        name = x;
+                    }
+                    println("Enregistre à : "+name+ext);
+                    java.io.OutputStreamWriter file=openOut(name+ext);
+                    printToFile(file, FEN);
+                    closeOut(file);
+
+                println(FEN);
+                break;
+            case "PGN" :
+                break;
+            case "liste" :
+                break;
+            default :
+                println("Une erreur inconnu dans game.Enregistrement()");
+                break;
+       }
     }
 }
 public class Board{
@@ -126,35 +177,10 @@ private class AI{
     int color = 0;
     
 }
-private class Analyse{
-    private String file = "";
-    private Boolean finished = false;
-    public void Checkformat(){
-
-    }
-    public void openFile(){
-
-    }
-}
 void main(){
     Game game = new Game();
     Board board = game.board;
-    Analyse analyse = new Analyse();
-    while(!game.finished && !analyse.finished){
-    String y = readString("jouer : \"jouer\" \n Ouvrir une partie : \"ouvrir\" ");
-    switch(y){
-                case "Jouer" :
-                    println("Début de la partie");
-                    sleep(1000);
-                    break;
-                case "ouvrir" :
-                    println("Ouverture fichier");
-                    game.playerselection = true;
-                    break;
-                default:
-                    println("error : inconnu");
-                    break;
-        }
+    while(!game.finished){
         while(!game.playerselection){
             String x = readString("Combien de joueurs ?");
             switch(x){
@@ -188,5 +214,47 @@ void main(){
         game.jouerCoup(game.player);
         clear();
     }
+    boolean enregistrer = false;
+    String x = readString("souhaitez vous enregistrer la partie dans un fichier ? [o/N]");
+        switch(x){
+            case "O" :
+                enregistrer = true;
+                break;
+            case "o" :
+                enregistrer = true;
+                break;
+            default :
+                break;
+        }
+        if (enregistrer == true ){
+            String format = "";
+            while(enregistrer){
+                x = readString("Sous quel format ? (FEN, PGN, liste)");
+                switch(x){
+                    case "FEN" :
+                        break;
+                    case "PGN" :
+                        break;
+                    case "liste" :
+                        break;
+                    default :
+                        println("error : inconnu");
+                        break;
+                }
+                game.Enregistrement(x);
+                x = readString("Voulez-vous l'enregistrer dans un autre format ? [o/N]");
+                switch(x){
+                    case "O" :
+                        enregistrer = true;
+                        break;
+                    case "o" :
+                        enregistrer = true;
+                        break;
+                    default :
+                        enregistrer = false;
+                        break;
+                }
+            }
+        }
     print("Le programme s'est terminee avec succes !");
 }
