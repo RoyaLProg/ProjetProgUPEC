@@ -1,3 +1,4 @@
+//si une fonction fait plus de 10 lignes (hors déclaration et accolade fermante de fin), c'est à cause de vos options de sauvegarde sous robusta.
 class Box{
     int x = 0;
     int y = 0;
@@ -27,12 +28,9 @@ class Game{
                 print(playerchar[board.boxes[i][j].color]);
                 if(j<10) print(" ");
             }
-            print(" "+(i+1));
-            println();
+            println(" "+(i+1));
         }
         println("             A B C D E F G H I J K");
-        println();
-        println();
     }
     public void setDebug(boolean x){
         debug = x;
@@ -50,115 +48,121 @@ class Game{
     }
     public void jouerCoup(int player){
         int x = 0;
-        String[] l = {"A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K"};
-        String[] l2 = {"a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k"};
         try{
             String pre_y = readString("Joueur "+ player + " Ligne ?");
             if(equal(pre_y,"exit")){finished = true; return;}
             int y = Integer.parseInt(pre_y);
             String pre_x = readString("Joueur "+ player + " Colone ?");
             if(equal(pre_x,"exit")){finished = true; return;}
-            int bet_x= -1;
+            x  = getColumn(pre_x);
+            board.changeColor(x,y-1,player);
+            changePlayer(x,y-1);
+        }catch(Exception e){Error("entrees vides detectees ! \n tapez \"exit\" pour fermer la partie !");}
+    }
+    public int getColumn(String pre_x){
+        int bet_x= -1;
+        int x = 0;
             try{
                 bet_x = Integer.parseInt(pre_x);
             }catch(Exception e){}
-            if(bet_x != -1){x = bet_x-1;}
+            if(bet_x != -1)x = bet_x-1;
             else{
-                for(int i = 0; i < l.length; i++){
+                getColumnFromChar(pre_x);
+            }
+        return x;
+    }
+    public int getColumnFromChar(String pre_x){
+        int x = -1;
+        String[] l = {"A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K"};
+        String[] l2 = {"a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k"};
+        for(int i = 0; i < l.length; i++){
                     if(equal(pre_x,l[i])){x = i; break;}
                     if(equal(pre_x,l2[i])){x = i; break;}
-                }
-            }
-            board.boxes[y-1][x].color = player;
-            coup[0] = y-1;
-            coup[1] = x;
-            changePlayer();
-        }catch(Exception e){
-            clear();
-            println("error : entrees vides detectees !");
-            println("veuillez ne pas laisser les entrees vides");
-            print("tapez \"exit\" pour fermer la partie !");
-            sleep(5000);
         }
+        return 0;
     }
-    public void changePlayer(){
+    public void Error(String m){
+        clear();
+        println("error : " + m);
+        sleep(5000);
+    }
+    public void changePlayer(int x,int y){
         player = 3-player;
+        if(debug){
+            coup[0] = x;
+            coup[1] = y;
+        }
     }
     public void Enregistrement(String format){
         String x = readString("nom du fichier ? \nVous pouvez specifier un chemin d'access : (i.e /path/to/file) \npar defaut il sera enregistrer dans le repertoire du jeux ");
-        String ext = "";
-        java.io.OutputStreamWriter file;
-        String name;
-            if(!equal(stringNth(x,0),"/") && !equal(stringNth(x,0),"C")){
-                name = "./"+x;
-            } else {
-                name = x;
+        String ext = ".csv";
+        String txt = "";    
+        if(format == "FEN"){ext = ".txt"; txt = getFEN(txt);}
+        else if(format == "tableau"){txt = getTab(txt);}
+        else if(format == "liste"){txt = getListe(txt);}
+        else Error("Une erreur inconnu dans game.Enregistrement()");
+        String Path = getPath(x,ext);
+        SaveAtPath(Path,txt);
+    }
+    public String getFEN(String txt){
+        int count = 0;
+        for(int i = 0; i < board.boxes.length; i++){
+            for (int j = 0; j < board.boxes[0].length; j++){
+                txt +=verifFEN(txt,count,i,j);
             }
-        switch(format){
-            case "FEN" :
-                ext = ".txt";
-                String FEN = "";
-                int count = 0;
-                for(int i = 0; i < board.boxes.length; i++){
-                    for (int j = 0; j < board.boxes[0].length; j++){
-                        if(board.boxes[i][j].color == 0 || board.boxes[i][j].color == 3){
-                            count++;
-                        } else if(board.boxes[i][j].color == 1){
-                            if(count != 0) FEN+=count;
-                            FEN +="x";
-                            count = 0;
-                        } else {
-                            if(count != 0) FEN+=count;
-                            FEN +="X";
-                            count = 0;
-                        }
-                    }
-                    count = 0;
-                    FEN +="/";
-                }
-                FEN += " "+player;
-                println("Enregistre à : "+name+ext);
-                file=openOut(name+ext);
-                printToFile(file, FEN);
-                closeOut(file);
-                println(FEN);
-                break;
-            case "tableau":
-                ext = ".csv";
-                String tableau = "";
-                for(int i = 0; i < board.boxes.length; i++){
-                    for(int j = 0; j < board.boxes[0].length; j++){
-                        tableau += board.boxes[i][j].color;
-                        if(j < 10) tableau += ",";
-                    }
-                    tableau += "\n";
-                }
-                println("Enregistre à : "+name+ext);
-                file = openOut(name+ext);
-                printToFile(file, tableau);
-                closeOut(file);
-                println(tableau);
-                break;
-            case "liste" :
-                ext = ".csv";
-                String liste = "";
-                for(int i = 0; i < board.boxes.length; i++){
-                    for(int j = 0; j < board.boxes[0].length; j++){
-                        liste += i + "," + j + "," + board.boxes[i][j].color;
-                        if(j < 10) liste += "\n";
-                    }
-                    liste += "\n";
-                }
-                println("Enregistre à : "+name+ext);
-                file = openOut(name+ext);
-                printToFile(file, liste);
-                closeOut(file);
-                println(liste);
-                break;
-            default :
-                println("Une erreur inconnu dans game.Enregistrement()");
-                break;
-       }
+            count = 0;
+            txt +="/";
+        }
+        return txt;
+    }
+    public String verifFEN(String txt,int count,int i,int j){
+        String[] charp = {"x","X"};
+        if(board.boxes[i][j].color == 0 || board.boxes[i][j].color == 3) count++;
+        else {
+            if(count != 0)txt+=count;
+            txt += charp[player-1];
+            count = 0;
+        }
+        if(i == 10 && j == 10) txt += " "+player;
+        return txt;
+    }
+    public String getTab(String txt){
+        for(int i = 0; i < board.boxes.length; i++){
+            for(int j = 0; j < board.boxes[0].length; j++){
+                txt += board.boxes[i][j].color;
+                if(j < 10) txt += ",";
+            }
+            txt += "\n";
+        }
+        return txt;
+    }
+    public String getListe(String txt){
+        for(int i = 0; i < board.boxes.length; i++){
+            for(int j = 0; j < board.boxes[0].length; j++){
+                txt += i + "," + j + "," + board.boxes[i][j].color;
+                if(j < 10) txt += "\n";
+            }
+            txt += "\n";
+        }
+        return txt;
+    }
+    String getPath(String x,String ext){
+        String name = "";
+        if(!equal(stringNth(x,0),"/") && !equal(stringNth(x,0),"C")){
+                name = "./"+x;
+        } else {
+             name = x;
+        }
+        name+=ext;
+        return name;
+    }
+    void SaveAtPath(String Path,String txt){
+        java.io.OutputStreamWriter file; 
+        println("Enregistre à : " + Path);
+        file=openOut(Path);
+        printToFile(file, txt);
+        closeOut(file);
+        println(txt);
     }
 }
 public class Board{
@@ -200,11 +204,39 @@ public class Board{
     public int getColor(int x,int y){
         return this.boxes[x-1][y-1].color;
     }
+    public void changeColor(int x, int y, int player){
+        boxes[y][x].color = player;
+    }
 }
 private class AI{
     Board board = new Board();
     int color = 0;
     
+}
+public class GUI{
+    public void Affichage(Board board){
+        for(int i = 0; i < board.boxes.length;i++){
+            for(int j = 0; j < board.boxes[0].length;j++){
+                Hexagone(board.boxes[i][j].x, board.boxes[i][j].y);
+            }
+        }
+    }
+    public void Hexagone(int bx, int by){
+        int x = 10;
+        int l = 10;
+        int h = 10;
+        int offset = 10;
+        boolean down = false;
+        for(int i = -20; i < 20; i++){
+            for(int j = -20; j < 20; j++){
+                if((j <= -offset || j >= offset));
+                else setPixel(i,j,"blue");
+            }
+            if (!down && i%2==0) offset++;
+            else if(down && offset>10 && i%2==0)offset--;
+            if(offset == 20) down = true;
+        }
+    }
 }
 void main(){
     Game game = new Game();
@@ -231,6 +263,8 @@ void main(){
         clear();
         game.Affichage();
         if(game.debug){
+            println();
+            println();
             try{
             println("player : " + game.player +", finished : "+game.finished+", dernier coup : " + game.coup[0] + " " + game.coup[1]);
             println();
