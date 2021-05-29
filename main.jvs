@@ -61,14 +61,13 @@ class Game{
     }
     public int getColumn(String pre_x){
         int bet_x= -1;
-        int x = 0;
+        int x = -1;
             try{
                 bet_x = Integer.parseInt(pre_x);
             }catch(Exception e){}
             if(bet_x != -1)x = bet_x-1;
-            else{
-                getColumnFromChar(pre_x);
-            }
+            else x = getColumnFromChar(pre_x);
+            if (x == -1) Error("Merci de donner un numero/caratere correct");
         return x;
     }
     public int getColumnFromChar(String pre_x){
@@ -79,7 +78,7 @@ class Game{
                     if(equal(pre_x,l[i])){x = i; break;}
                     if(equal(pre_x,l2[i])){x = i; break;}
         }
-        return 0;
+        return x;
     }
     public void Error(String m){
         clear();
@@ -97,32 +96,30 @@ class Game{
         String x = readString("nom du fichier ? \nVous pouvez specifier un chemin d'access : (i.e /path/to/file) \npar defaut il sera enregistrer dans le repertoire du jeux ");
         String ext = ".csv";
         String txt = "";    
-        if(format == "FEN"){ext = ".txt"; txt = getFEN(txt);}
-        else if(format == "tableau"){txt = getTab(txt);}
-        else if(format == "liste"){txt = getListe(txt);}
+        if(equal(format,"FEN")){ext = ".txt"; txt = getFEN(txt);}
+        else if(equal(format,"tableau")){txt = getTab(txt);}
+        else if(equal(format,"liste")){txt = getListe(txt);}
         else Error("Une erreur inconnu dans game.Enregistrement()");
         String Path = getPath(x,ext);
         SaveAtPath(Path,txt);
     }
     public String getFEN(String txt){
-        int count = 0;
+        int count = 0;  
         for(int i = 0; i < board.boxes.length; i++){
             for (int j = 0; j < board.boxes[0].length; j++){
-                txt +=verifFEN(txt,count,i,j);
+                if(board.boxes[i][j].color == 0 || board.boxes[i][j].color == 3) count++;
+                else txt = verifFEN(txt,count,i,j);
             }
             count = 0;
-            txt +="/";
+            if(i < 10) txt +="/";
         }
         return txt;
     }
     public String verifFEN(String txt,int count,int i,int j){
         String[] charp = {"x","X"};
-        if(board.boxes[i][j].color == 0 || board.boxes[i][j].color == 3) count++;
-        else {
-            if(count != 0)txt+=count;
-            txt += charp[player-1];
-            count = 0;
-        }
+        if(count != 0)txt+=count;
+        txt += charp[board.boxes[i][j].color-1];
+        count = 0;
         if(i == 10 && j == 10) txt += " "+player;
         return txt;
     }
@@ -163,6 +160,7 @@ class Game{
         printToFile(file, txt);
         closeOut(file);
         println(txt);
+        clear();
     }
 }
 public class Board{
