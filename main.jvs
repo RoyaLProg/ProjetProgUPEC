@@ -46,16 +46,22 @@ class Game{
     }
     public void jouerCoup(int player){
         int x = 0;
-        try{
-            String pre_y = readString("Joueur "+ player + " Ligne ?");
-            if(equal(pre_y,"exit")){finished = true; return;}
-            int y = Integer.parseInt(pre_y);
-            String pre_x = readString("Joueur "+ player + " Colone ?");
-            if(equal(pre_x,"exit")){finished = true; return;}
-            x  = getColumn(pre_x);
-            board.changeColor(x,y-1,player);
-            changePlayer(x,y-1);
-        }catch(Exception e){Error("entrees vides detectees ! \n tapez \"exit\" pour fermer la partie !");}
+        boolean z = false;
+        while(!z){
+            try{
+                String pre_y = readString("Joueur "+ player + " Ligne ?");
+                if(equal(pre_y,"exit")){finished = true; return;}
+                int y = Integer.parseInt(pre_y);
+                String pre_x = readString("Joueur "+ player + " Colone ?");
+                if(equal(pre_x,"exit")){finished = true; return;}
+                x = getColumn(pre_x);
+                if(check(x,y-1)){
+                    board.changeColor(x,y-1,player);
+                    z=true;
+                }
+                changePlayer(x,y-1);
+            }catch(Exception e){Error("entrees vides detectees ! \n tapez \"exit\" pour fermer la partie !");}
+        }
     }
     public int getColumn(String pre_x){
         int bet_x= -1;
@@ -68,6 +74,12 @@ class Game{
             getColumnFromChar(pre_x);
         }
         return x;
+    }
+    public boolean check(int x,int y){
+        if(board.boxes[y][x].color != 3 || board.boxes[y][x].color != 0){
+            return true;
+        }
+        return false;
     }
     public int getColumnFromChar(String pre_x){
         int x = -1;
